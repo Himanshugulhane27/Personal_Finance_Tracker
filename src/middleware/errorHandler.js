@@ -15,6 +15,7 @@ const ERROR_CODES = {
   PG_CHECK: '23514',
 };
 
+// Express error handlers require 4 params even if unused
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, _req, res, _next) => {
   // ── Operational (expected) errors ─────────────────────
