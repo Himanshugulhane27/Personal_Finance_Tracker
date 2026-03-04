@@ -40,4 +40,4 @@ const formatUSD = (cents) => {
   return '$' + (cents / 100).toFixed(2);
 };
 
-module.exports = { sha256, parseMonth, clamp, round };
+module.exports = { sha256, parseMonth, clamp, round, formatUSD };
