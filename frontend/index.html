@@ -170,6 +170,10 @@
       .notification-banner { position: fixed; top: 1rem; right: 1rem; max-width: 28rem; padding: 0.875rem 1.25rem; border-radius: 0.75rem; z-index: 200; animation: fadeIn 0.3s ease; font-size: 0.875rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
     .notification-banner.success { background: #22c55e; color: white; }
     .notification-banner.error { background: #ef4444; color: white; }
+      .summary-row { display: flex; justify-content: space-between; padding: 0.625rem 0; border-bottom: 1px solid #f3f4f6; }
+    .summary-row:last-child { border-bottom: none; font-weight: 600; }
+    .summary-value.positive { color: #16a34a; }
+    .summary-value.negative { color: #dc2626; }
   </style>
 </head>
 <body>
