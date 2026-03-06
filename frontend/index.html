@@ -174,6 +174,9 @@
     .summary-row:last-child { border-bottom: none; font-weight: 600; }
     .summary-value.positive { color: #16a34a; }
     .summary-value.negative { color: #dc2626; }
+      .loading-bar { width: 100%; height: 3px; background: #e5e7eb; overflow: hidden; border-radius: 2px; }
+    .loading-bar::after { content: ''; display: block; width: 40%; height: 100%; background: #4f46e5; animation: loadingSlide 1.2s ease-in-out infinite; }
+    @keyframes loadingSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
   </style>
 </head>
 <body>
