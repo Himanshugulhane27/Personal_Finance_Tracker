@@ -177,6 +177,13 @@
       .loading-bar { width: 100%; height: 3px; background: #e5e7eb; overflow: hidden; border-radius: 2px; }
     .loading-bar::after { content: ''; display: block; width: 40%; height: 100%; background: #4f46e5; animation: loadingSlide 1.2s ease-in-out infinite; }
     @keyframes loadingSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
+      .step-indicator { display: flex; align-items: center; gap: 0.5rem; }
+    .step { width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; }
+    .step.completed { background: #22c55e; color: white; }
+    .step.active { background: #4f46e5; color: white; }
+    .step.pending { background: #e5e7eb; color: #9ca3af; }
+    .step-line { flex: 1; height: 2px; background: #e5e7eb; }
+    .step-line.completed { background: #22c55e; }
   </style>
 </head>
 <body>
