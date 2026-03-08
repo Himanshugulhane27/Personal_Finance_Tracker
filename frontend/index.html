@@ -191,6 +191,13 @@
     .timeline-dot { position: absolute; left: -1.25rem; top: 0.25rem; width: 0.625rem; height: 0.625rem; border-radius: 50%; background: #4f46e5; border: 2px solid white; }
     .timeline-content { font-size: 0.875rem; }
     .timeline-date { font-size: 0.75rem; color: #9ca3af; }
+      .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .stat-mini { padding: 1rem; border-radius: 0.5rem; background: white; border: 1px solid #f3f4f6; }
+    .stat-mini-value { font-size: 1.5rem; font-weight: 700; line-height: 1; }
+    .stat-mini-label { font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; }
+    .stat-mini-change { font-size: 0.6875rem; font-weight: 500; margin-top: 0.375rem; }
+    .stat-mini-change.up { color: #16a34a; }
+    .stat-mini-change.down { color: #dc2626; }
   </style>
 </head>
 <body>
