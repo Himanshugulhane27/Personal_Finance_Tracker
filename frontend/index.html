@@ -209,6 +209,10 @@
       .switch-group { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; }
     .switch-label { font-size: 0.875rem; font-weight: 500; }
     .switch-desc { font-size: 0.75rem; color: #9ca3af; }
+      .color-swatch { width: 1.5rem; height: 1.5rem; border-radius: 0.375rem; border: 2px solid transparent; cursor: pointer; transition: border-color 0.15s; }
+    .color-swatch:hover { border-color: #6366f1; }
+    .color-swatch.selected { border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79,70,229,0.3); }
+    .color-picker-grid { display: flex; flex-wrap: wrap; gap: 0.375rem; }
   </style>
 </head>
 <body>
