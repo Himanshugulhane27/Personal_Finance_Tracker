@@ -256,6 +256,9 @@
       .sparkline { display: inline-flex; align-items: flex-end; gap: 1px; height: 1.5rem; }
     .sparkline-bar { width: 3px; border-radius: 1px; background: #6366f1; transition: height 0.3s; }
     .sparkline-bar.negative { background: #ef4444; }
+      .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+    .form-actions { display: flex; justify-content: flex-end; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid #f3f4f6; margin-top: 1rem; }
   </style>
 </head>
 <body>
