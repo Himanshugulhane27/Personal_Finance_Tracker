@@ -290,6 +290,11 @@
     .page-title { font-size: 1.5rem; font-weight: 700; color: #111827; }
     .page-subtitle { font-size: 0.875rem; color: #6b7280; margin-top: 0.125rem; }
     .page-actions { display: flex; gap: 0.5rem; }
+      .category-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: 0.75rem; }
+    .category-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.625rem 0.875rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; cursor: pointer; transition: all 0.15s; font-size: 0.875rem; }
+    .category-item:hover { border-color: #c7d2fe; background: #f5f3ff; }
+    .category-item.selected { border-color: #6366f1; background: #eef2ff; }
+    .category-dot { width: 0.625rem; height: 0.625rem; border-radius: 50%; flex-shrink: 0; }
   </style>
 </head>
 <body>
