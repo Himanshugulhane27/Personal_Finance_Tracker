@@ -17,7 +17,7 @@
     "express",
     "postgresql"
   ],
-  "author": "",
+  "author": "Himanshu Gulhane",
   "license": "ISC",
   "engines": {
     "node": ">=18.0.0"
