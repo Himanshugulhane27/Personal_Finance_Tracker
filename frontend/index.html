@@ -148,19 +148,19 @@
 
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-gray-500 text-sm font-medium uppercase">Total Income</h3>
             <p className="text-3xl font-bold text-green-600">${Number(summary.total_income).toFixed(2)}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-gray-500 text-sm font-medium uppercase">Total Expense</h3>
             <p className="text-3xl font-bold text-red-600">${Number(summary.total_expense).toFixed(2)}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-gray-500 text-sm font-medium uppercase">Net Savings</h3>
             <p className="text-3xl font-bold text-indigo-600">${Number(summary.net_savings).toFixed(2)}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-gray-500 text-sm font-medium uppercase">Savings Rate</h3>
             <p className="text-3xl font-bold text-blue-600">{Number(summary.savings_rate).toFixed(1)}%</p>
           </div>
