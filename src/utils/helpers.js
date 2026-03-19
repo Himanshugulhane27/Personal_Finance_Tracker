@@ -33,4 +33,5 @@ const round = (val, decimals = 2) => {
   return Math.round(val * factor) / factor;
 };
 
+// TODO: add currency formatter utility
 module.exports = { sha256, parseMonth, clamp, round };
