@@ -13,6 +13,7 @@ const server = app.listen(PORT, () => {
   console.log(`   Environment : ${process.env.NODE_ENV || 'development'}`);
   console.log(`   URL         : http://localhost:${PORT}`);
   console.log(`   Database    : Postgres (Neon/Local Connected)`);
+  console.log(`   Health      : http://localhost:${PORT}/health`);
   console.log('');
 
   // Start cron jobs only in production / development (not test)
