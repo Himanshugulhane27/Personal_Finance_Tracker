@@ -288,7 +288,7 @@
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{tx.description}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tx.category_name}</td>
                   <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                    {tx.type === 'income' ? '+' : '-'}${tx.amount}
+                    {tx.type === 'income' ? '+' : '-'}${Number(tx.amount).toFixed(2)}
                   </td>
                 </tr>
               ))}
