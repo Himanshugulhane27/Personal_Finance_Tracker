@@ -70,7 +70,7 @@ const errorHandler = (err, _req, res, _next) => {
   }
 
   // ── Unknown / programmer errors ───────────────────────
-  console.error('[UNHANDLED ERROR]', err);
+  console.error(`[${new Date().toISOString()}] [UNHANDLED ERROR]`, err);
 
   const statusCode = err.statusCode || 500;
   const message =
