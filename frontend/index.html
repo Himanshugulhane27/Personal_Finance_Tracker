@@ -272,7 +272,7 @@
             </form>
           )}
 
-          <table className="min-w-full divide-y divide-gray-200">
+          <div className="overflow-x-auto"><table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
@@ -293,7 +293,7 @@
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
           <div className="mt-4 flex justify-between items-center">
             <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1} className="px-4 py-2 border rounded text-sm bg-gray-50 hover:bg-gray-100 disabled:opacity-50">Previous</button>
             <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
