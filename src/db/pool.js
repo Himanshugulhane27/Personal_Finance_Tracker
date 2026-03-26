@@ -1,3 +1,4 @@
+// Database connection pool configuration
 /**
  * PostgreSQL connection pool with query helpers.
  *
