@@ -411,3 +411,15 @@ ISC
 3. Commit your changes (`git commit -m 'Add my feature'`)
 4. Push to the branch (`git push origin feature/my-feature`)
 5. Open a Pull Request
+
+## Roadmap
+
+- [x] JWT Authentication
+- [x] Transaction CRUD
+- [x] Budget tracking
+- [x] Analytics dashboard
+- [ ] Dark mode support
+- [ ] Recurring expense automation
+- [ ] Mobile app (React Native)
+- [ ] Multi-currency support
+- [ ] Data visualization improvements
