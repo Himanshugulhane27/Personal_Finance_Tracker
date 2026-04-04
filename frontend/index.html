@@ -39,6 +39,11 @@
     th { user-select: none; }
       :root { --bg-primary: #ffffff; --bg-secondary: #f3f4f6; --text-primary: #111827; --text-secondary: #6b7280; --border-color: #e5e7eb; --accent: #4f46e5; }
     .dark-mode { --bg-primary: #1f2937; --bg-secondary: #111827; --text-primary: #f9fafb; --text-secondary: #9ca3af; --border-color: #374151; --accent: #818cf8; }
+      .dark-mode body { background-color: var(--bg-secondary); color: var(--text-primary); }
+    .dark-mode .bg-white { background-color: var(--bg-primary); }
+    .dark-mode .text-gray-900 { color: var(--text-primary); }
+    .dark-mode .text-gray-500 { color: var(--text-secondary); }
+    .dark-mode .border-gray-200 { border-color: var(--border-color); }
   </style>
 </head>
 <body>
