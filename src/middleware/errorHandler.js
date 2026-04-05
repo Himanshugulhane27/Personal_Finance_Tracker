@@ -8,6 +8,13 @@
  */
 const AppError = require('../utils/AppError');
 
+// Error code reference for quick debugging
+const ERROR_CODES = {
+  PG_UNIQUE: '23505',
+  PG_FK: '23503',
+  PG_CHECK: '23514',
+};
+
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, _req, res, _next) => {
   // ── Operational (expected) errors ─────────────────────
