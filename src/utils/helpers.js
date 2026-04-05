@@ -33,5 +33,11 @@ const round = (val, decimals = 2) => {
   return Math.round(val * factor) / factor;
 };
 
-// TODO: add currency formatter utility
+/**
+ * Format cents to dollar string.
+ */
+const formatUSD = (cents) => {
+  return '$' + (cents / 100).toFixed(2);
+};
+
 module.exports = { sha256, parseMonth, clamp, round };
