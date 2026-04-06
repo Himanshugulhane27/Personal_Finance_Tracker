@@ -191,14 +191,17 @@
             <p className="text-3xl font-bold text-green-600">${Number(summary.total_income).toFixed(2)}</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="stat-icon">📉</div>
             <h3 className="text-gray-500 text-sm font-medium uppercase">Total Expense</h3>
             <p className="text-3xl font-bold text-red-600">${Number(summary.total_expense).toFixed(2)}</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="stat-icon">💵</div>
             <h3 className="text-gray-500 text-sm font-medium uppercase">Net Savings</h3>
             <p className="text-3xl font-bold text-indigo-600">${Number(summary.net_savings).toFixed(2)}</p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="stat-icon">🎯</div>
             <h3 className="text-gray-500 text-sm font-medium uppercase">Savings Rate</h3>
             <p className="text-3xl font-bold text-blue-600">{Number(summary.savings_rate).toFixed(1)}%</p>
           </div>
