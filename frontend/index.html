@@ -390,8 +390,8 @@
               data: {
                 labels: trendData.data.map(d => d.month),
                 datasets: [
-                  { label: 'Income', data: trendData.data.map(d => d.income), backgroundColor: 'rgba(34, 197, 94, 0.8)' },
-                  { label: 'Expense', data: trendData.data.map(d => d.expense), backgroundColor: 'rgba(239, 68, 68, 0.8)' }
+                  { label: 'Income', data: trendData.data.map(d => d.income), backgroundColor: 'rgba(34, 197, 94, 0.8)', borderRadius: 6 },
+                  { label: 'Expense', data: trendData.data.map(d => d.expense), backgroundColor: 'rgba(239, 68, 68, 0.8)', borderRadius: 6 }
                 ]
               },
               options: { responsive: true }
