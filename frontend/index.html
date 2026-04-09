@@ -379,6 +379,7 @@
           const res = await fetchWithAuth('/budgets');
           const data = await res.json();
           if (data.success) setBudgets(data.data);
+          else console.error('Failed to load budgets');
         };
         fetchBudgets();
       }, []);
