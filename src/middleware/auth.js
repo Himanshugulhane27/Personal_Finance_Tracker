@@ -35,4 +35,5 @@ const authenticate = (req, _res, next) => {
   }
 };
 
+// Export middleware
 module.exports = authenticate;
