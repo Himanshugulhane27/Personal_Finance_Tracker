@@ -526,6 +526,7 @@
               {activeTab === 'transactions' && <Transactions />}
               {activeTab === 'analytics' && <Analytics />}
               {activeTab === 'budgets' && <Budgets />}
+              {activeTab === 'settings' && <div className="animate-fade-in"><div className="settings-section"><h2 className="text-xl font-bold mb-4">⚙️ Settings</h2><div className="settings-label">Theme</div><div className="settings-description">Switch between light and dark mode</div><button onClick={() => { document.documentElement.classList.toggle('dark-mode'); localStorage.setItem('theme', document.documentElement.classList.contains('dark-mode') ? 'dark' : 'light'); }} className="px-4 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700">Toggle Theme</button></div><div className="settings-section"><div className="settings-label">Account</div><div className="settings-description">Manage your account preferences</div><p className="text-sm text-gray-500">Logged in with your account</p></div></div>}
             </div>
           </div>
         </div>
