@@ -109,6 +109,9 @@
     }
       .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
     @media (max-width: 768px) { .mobile-menu-btn { display: block; } }
+      .card-grid { display: grid; gap: 1rem; }
+    @media (min-width: 640px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .card-grid { grid-template-columns: repeat(4, 1fr); } }
   </style>
 </head>
 <body>
