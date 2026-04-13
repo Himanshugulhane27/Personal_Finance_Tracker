@@ -9,7 +9,7 @@ const { startCronJobs } = require('./utils/cronJobs');
 const PORT = process.env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
-  console.log(`\n🚀 Personal Finance Tracker API`);
+  console.log(`\n🚀 Personal Finance Tracker API v1.0.0`);
   console.log(`   Environment : ${process.env.NODE_ENV || 'development'}`);
   console.log(`   URL         : http://localhost:${PORT}`);
   console.log(`   Database    : Postgres (Neon/Local Connected)`);
