@@ -6,6 +6,20 @@ A production-grade REST API for personal finance management built with **Node.js
 
 ## Features
 
+### Core
+- 🔐 **Authentication** — JWT with refresh token rotation
+- 💳 **Transactions** — Full CRUD with filtering & pagination
+- 📁 **Categories** — Per-user with 12 auto-seeded defaults
+- 💰 **Budgets** — Per-category tracking with spend alerts
+- 📊 **Analytics** — Summary, trends, category breakdown, health score
+- 📥 **CSV Export** — Download transaction history
+
+### UI/UX
+- 🌙 **Dark Mode** — Persistent toggle
+- 📱 **Responsive** — Mobile-optimized
+- ✨ **Animations** — Fade-in, shimmer, hover effects
+
+
 - **JWT Authentication** — Access + refresh token rotation with SHA-256 hashed storage and reuse detection
 - **Transaction Management** — Full CRUD with filtering (type, category, date range) and pagination
 - **Category System** — Per-user categories with 12 auto-seeded defaults via PostgreSQL trigger
