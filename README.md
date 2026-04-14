@@ -418,6 +418,13 @@ Auto-triggers:
 
 ---
 
+## Acknowledgments
+
+- [Express.js](https://expressjs.com/) — Web framework
+- [Chart.js](https://www.chartjs.org/) — Visualization
+- [Tailwind CSS](https://tailwindcss.com/) — CSS framework
+- [Neon](https://neon.tech/) — Serverless Postgres
+
 ## License
 
 ISC
