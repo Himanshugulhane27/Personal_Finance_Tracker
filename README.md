@@ -16,6 +16,10 @@ A production-grade REST API for personal finance management built with **Node.js
 
 ---
 
+## Screenshots
+
+> 📸 Screenshots coming soon — includes dashboard, transactions, analytics, budgets, and settings.
+
 ## Tech Stack
 
 | Layer       | Technology                   |
