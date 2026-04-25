@@ -403,7 +403,7 @@
                 <div className="w-full bg-gray-200 rounded-full h-2.5">
                   <div className={`h-2.5 rounded-full ${b.warning ? 'bg-red-600' : 'bg-green-600'}`} style={{ width: `${Math.min(b.spend_percentage, 100)}%` }}></div>
                 </div>
-                {b.warning && <p className="text-xs text-red-500 mt-1">Warning: Budget is over 80% used.</p>}
+                {b.warning && <p className="text-xs text-red-500 mt-1 font-medium">Warning: Budget is over 80% used.</p>}
               </div>
             ))}
             {budgets.length === 0 && <p className="text-gray-500">No active budgets.</p>}
