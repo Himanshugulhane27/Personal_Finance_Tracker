@@ -1,5 +1,7 @@
 # Personal Finance Tracker API
 
+![Status](https://img.shields.io/badge/status-active-brightgreen) ![Node](https://img.shields.io/badge/node-%3E%3D18-blue)
+
 A production-grade REST API for personal finance management built with **Node.js**, **Express**, and **PostgreSQL** (raw queries, no ORM).
 
 ## Features
