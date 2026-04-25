@@ -1,3 +1,4 @@
+// Personal Finance Tracker - v1.0.0
 /**
  * Express application setup.
  *
