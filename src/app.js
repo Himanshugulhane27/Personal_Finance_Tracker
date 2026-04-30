@@ -55,7 +55,8 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 
 app.get('*', (req, res, next) => {
   // If it's an API route that wasn't found, pass to the 404 handler
-  if (req.path.startsWith('/auth') || req.path.startsWith('/transactions') || req.path.startsWith('/categories') || req.path.startsWith('/budgets') || req.path.startsWith('/analytics') || req.path.startsWith('/export')) {
+  const apiPaths = ['/auth', '/transactions', '/categories', '/budgets', '/analytics', '/export'];
+  if (apiPaths.some(apiPath => req.path.startsWith(apiPath))) {
     return next();
   }
   // Otherwise serve the React app
