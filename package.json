@@ -10,7 +10,13 @@
     "test": "NODE_ENV=test jest --runInBand --forceExit --detectOpenHandles",
     "test:verbose": "NODE_ENV=test jest --runInBand --forceExit --detectOpenHandles --verbose"
   },
-  "keywords": ["finance", "tracker", "api", "express", "postgresql"],
+  "keywords": [
+    "finance",
+    "tracker",
+    "api",
+    "express",
+    "postgresql"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -19,6 +25,7 @@
     "csv-stringify": "^6.5.2",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "express-rate-limit": "^8.4.1",
     "helmet": "^8.0.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
