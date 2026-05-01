@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Finance Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; }
+    .nav-item { cursor: pointer; padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 500; }
+    .nav-item.active { background-color: #e5e7eb; color: #111827; }
+    .nav-item:hover:not(.active) { background-color: #f3f4f6; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const API_URL = window.location.origin;
+
+    // Helper: fetch with auth
+    const fetchWithAuth = async (endpoint, options = {}) => {
+      const token = localStorage.getItem('access_token');
+      const headers = { 'Content-Type': 'application/json', ...options.headers };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      let res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+      
+      if (res.status === 401 && token) {
+        // try refresh
+        const refresh = localStorage.getItem('refresh_token');
+        if (refresh) {
+          const refRes = await fetch(`${API_URL}/auth/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: refresh })
+          });
+          const refData = await refRes.json();
+          if (refData.success) {
+            localStorage.setItem('access_token', refData.data.access_token);
+            localStorage.setItem('refresh_token', refData.data.refresh_token);
+            // retry original
+            headers['Authorization'] = `Bearer ${refData.data.access_token}`;
+            res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+          } else {
+            localStorage.clear();
+            window.location.reload();
+          }
+        } else {
+          localStorage.clear();
+          window.location.reload();
+        }
+      }
+      return res;
+    };
+
+    // Components
+    function Login({ onLogin }) {
+      const [isRegister, setIsRegister] = useState(false);
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      const [name, setName] = useState('');
+      const [error, setError] = useState('');
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        const endpoint = isRegister ? '/auth/register' : '/auth/login';
+        const body = isRegister ? { name, email, password } : { email, password };
+        
+        try {
+          const res = await fetch(`${API_URL}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          const data = await res.json();
+          if (data.success) {
+            localStorage.setItem('access_token', data.data.access_token);
+            localStorage.setItem('refresh_token', data.data.refresh_token);
+            onLogin();
+          } else {
+            setError(data.error?.message || 'Authentication failed');
+          }
+        } catch (err) {
+          setError('Network error');
+        }
+      };
+
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
+            <div>
+              <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                {isRegister ? 'Create your account' : 'Sign in to your account'}
+              </h2>
+            </div>
+            {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+              <div className="rounded-md shadow-sm -space-y-px">
+                {isRegister && (
+                  <div>
+                    <input type="text" required className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Full Name" value={name} onChange={e => setName(e.target.value)} />
+                  </div>
+                )}
+                <div>
+                  <input type="email" required className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} />
+                </div>
+                <div>
+                  <input type="password" required className={`appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 ${isRegister ? 'rounded-b-md' : 'rounded-b-md'} focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm`} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+                </div>
+              </div>
+              <div>
+                <button type="submit" className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  {isRegister ? 'Register' : 'Sign in'}
+                </button>
+              </div>
+            </form>
+            <div className="text-center">
+              <button onClick={() => setIsRegister(!isRegister)} className="text-indigo-600 hover:text-indigo-500 text-sm">
+                {isRegister ? 'Already have an account? Sign in' : 'Need an account? Register'}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function Dashboard() {
+      const [summary, setSummary] = useState(null);
+      
+      useEffect(() => {
+        const fetchSummary = async () => {
+          const month = new Date().toISOString().slice(0, 7);
+          const res = await fetchWithAuth(`/analytics/summary?month=${month}`);
+          const data = await res.json();
+          if (data.success) setSummary(data.data);
+        };
+        fetchSummary();
+      }, []);
+
+      if (!summary) return <div>Loading...</div>;
+
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-gray-500 text-sm font-medium uppercase">Total Income</h3>
+            <p className="text-3xl font-bold text-green-600">${Number(summary.total_income).toFixed(2)}</p>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-gray-500 text-sm font-medium uppercase">Total Expense</h3>
+            <p className="text-3xl font-bold text-red-600">${Number(summary.total_expense).toFixed(2)}</p>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-gray-500 text-sm font-medium uppercase">Net Savings</h3>
+            <p className="text-3xl font-bold text-indigo-600">${Number(summary.net_savings).toFixed(2)}</p>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-gray-500 text-sm font-medium uppercase">Savings Rate</h3>
+            <p className="text-3xl font-bold text-blue-600">{Number(summary.savings_rate).toFixed(1)}%</p>
+          </div>
+        </div>
+      );
+    }
+
+    function Transactions() {
+      const [txs, setTxs] = useState([]);
+      const [categories, setCategories] = useState([]);
+      const [page, setPage] = useState(1);
+      const [totalPages, setTotalPages] = useState(1);
+      const [showForm, setShowForm] = useState(false);
+      
+      // Form state
+      const [amount, setAmount] = useState('');
+      const [type, setType] = useState('expense');
+      const [categoryId, setCategoryId] = useState('');
+      const [description, setDescription] = useState('');
+      const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+
+      const fetchTxs = async (p) => {
+        const res = await fetchWithAuth(`/transactions?page=${p}&limit=10`);
+        const data = await res.json();
+        if (data.success) {
+          setTxs(data.data);
+          setTotalPages(data.pagination.total_pages);
+        }
+      };
+
+      const fetchCategories = async () => {
+        const res = await fetchWithAuth('/categories');
+        const data = await res.json();
+        if (data.success) setCategories(data.data);
+      };
+
+      useEffect(() => { 
+        fetchTxs(page);
+        fetchCategories();
+      }, [page]);
+
+      const handleAdd = async (e) => {
+        e.preventDefault();
+        const res = await fetchWithAuth('/transactions', {
+          method: 'POST',
+          body: JSON.stringify({
+            amount: Number(amount),
+            type,
+            category_id: categoryId,
+            description,
+            date
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          setShowForm(false);
+          setAmount('');
+          setDescription('');
+          fetchTxs(1);
+          setPage(1);
+        } else {
+          alert(data.error?.message || 'Failed to add transaction');
+        }
+      };
+
+      return (
+        <div className="bg-white shadow rounded-lg p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Transactions</h2>
+            <button onClick={() => setShowForm(!showForm)} className="px-4 py-2 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700">
+              {showForm ? 'Cancel' : '+ Add Transaction'}
+            </button>
+          </div>
+
+          {showForm && (
+            <form onSubmit={handleAdd} className="mb-6 bg-gray-50 p-4 rounded-lg border">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <select value={type} onChange={e => { setType(e.target.value); setCategoryId(''); }} className="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                  <select required value={categoryId} onChange={e => setCategoryId(e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm p-2 border">
+                    <option value="" disabled>Select Category</option>
+                    {categories.filter(c => c.type === type).map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                  <input type="number" step="0.01" required value={amount} onChange={e => setAmount(e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm p-2 border" placeholder="0.00" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                  <input type="date" required value={date} onChange={e => setDate(e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm p-2 border" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <input type="text" required value={description} onChange={e => setDescription(e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm p-2 border" placeholder="What was this for?" />
+                </div>
+              </div>
+              <button type="submit" className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Save Transaction</button>
+            </form>
+          )}
+
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {txs.map(tx => (
+                <tr key={tx.id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tx.date.slice(0,10)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{tx.description}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{tx.category_name}</td>
+                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                    {tx.type === 'income' ? '+' : '-'}${tx.amount}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="mt-4 flex justify-between items-center">
+            <button onClick={() => setPage(p => Math.max(1, p-1))} disabled={page === 1} className="px-4 py-2 border rounded text-sm bg-gray-50 hover:bg-gray-100 disabled:opacity-50">Previous</button>
+            <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
+            <button onClick={() => setPage(p => Math.min(totalPages, p+1))} disabled={page === totalPages} className="px-4 py-2 border rounded text-sm bg-gray-50 hover:bg-gray-100 disabled:opacity-50">Next</button>
+          </div>
+        </div>
+      );
+    }
+
+    function Analytics() {
+      const barRef = useRef(null);
+      const pieRef = useRef(null);
+
+      useEffect(() => {
+        let barChart, pieChart;
+        const loadCharts = async () => {
+          const month = new Date().toISOString().slice(0, 7);
+          const [trendRes, breakdownRes] = await Promise.all([
+            fetchWithAuth(`/analytics/trends?months=6`),
+            fetchWithAuth(`/analytics/category-breakdown?month=${month}`)
+          ]);
+          const trendData = await trendRes.json();
+          const breakdownData = await breakdownRes.json();
+
+          if (trendData.success && barRef.current) {
+            const ctx = barRef.current.getContext('2d');
+            barChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                labels: trendData.data.map(d => d.month),
+                datasets: [
+                  { label: 'Income', data: trendData.data.map(d => d.income), backgroundColor: 'rgba(34, 197, 94, 0.8)' },
+                  { label: 'Expense', data: trendData.data.map(d => d.expense), backgroundColor: 'rgba(239, 68, 68, 0.8)' }
+                ]
+              },
+              options: { responsive: true }
+            });
+          }
+
+          if (breakdownData.success && pieRef.current) {
+            const ctx = pieRef.current.getContext('2d');
+            pieChart = new Chart(ctx, {
+              type: 'doughnut',
+              data: {
+                labels: breakdownData.data.map(d => d.category_name),
+                datasets: [{
+                  data: breakdownData.data.map(d => d.amount),
+                  backgroundColor: ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#22c55e', '#14b8a6', '#0ea5e9', '#6366f1', '#a855f7', '#ec4899']
+                }]
+              },
+              options: { responsive: true, plugins: { legend: { position: 'right' } } }
+            });
+          }
+        };
+        loadCharts();
+        return () => {
+          if (barChart) barChart.destroy();
+          if (pieChart) pieChart.destroy();
+        };
+      }, []);
+
+      return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white shadow rounded-lg p-6">
+            <h2 className="text-xl font-bold mb-4">Income vs Expense (6 Months)</h2>
+            <canvas ref={barRef}></canvas>
+          </div>
+          <div className="bg-white shadow rounded-lg p-6">
+            <h2 className="text-xl font-bold mb-4">Category Breakdown (This Month)</h2>
+            <canvas ref={pieRef}></canvas>
+          </div>
+        </div>
+      );
+    }
+
+    function Budgets() {
+      const [budgets, setBudgets] = useState([]);
+
+      useEffect(() => {
+        const fetchBudgets = async () => {
+          const res = await fetchWithAuth('/budgets');
+          const data = await res.json();
+          if (data.success) setBudgets(data.data);
+        };
+        fetchBudgets();
+      }, []);
+
+      return (
+        <div className="bg-white shadow rounded-lg p-6">
+          <h2 className="text-xl font-bold mb-4">Budgets</h2>
+          <div className="space-y-6">
+            {budgets.map(b => (
+              <div key={b.id}>
+                <div className="flex justify-between mb-1">
+                  <span className="font-medium">{b.category_name}</span>
+                  <span className="text-sm text-gray-500">${b.current_spend} / ${b.amount_limit}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div className={`h-2.5 rounded-full ${b.warning ? 'bg-red-600' : 'bg-green-600'}`} style={{ width: `${Math.min(b.spend_percentage, 100)}%` }}></div>
+                </div>
+                {b.warning && <p className="text-xs text-red-500 mt-1">Warning: Budget is over 80% used.</p>}
+              </div>
+            ))}
+            {budgets.length === 0 && <p className="text-gray-500">No active budgets.</p>}
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('access_token'));
+      const [activeTab, setActiveTab] = useState('dashboard');
+
+      if (!isLoggedIn) {
+        return <Login onLogin={() => setIsLoggedIn(true)} />;
+      }
+
+      const handleLogout = () => {
+        localStorage.clear();
+        setIsLoggedIn(false);
+      };
+
+      return (
+        <div className="min-h-screen">
+          <nav className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between h-16">
+                <div className="flex items-center">
+                  <span className="text-xl font-bold text-indigo-600">FinanceTracker</span>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <button onClick={handleLogout} className="text-gray-500 hover:text-gray-700">Logout</button>
+                </div>
+              </div>
+            </div>
+          </nav>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex gap-8">
+            <div className="w-64 shrink-0 flex flex-col space-y-2">
+              <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard</div>
+              <div className={`nav-item ${activeTab === 'transactions' ? 'active' : ''}`} onClick={() => setActiveTab('transactions')}>Transactions</div>
+              <div className={`nav-item ${activeTab === 'analytics' ? 'active' : ''}`} onClick={() => setActiveTab('analytics')}>Analytics</div>
+              <div className={`nav-item ${activeTab === 'budgets' ? 'active' : ''}`} onClick={() => setActiveTab('budgets')}>Budgets</div>
+            </div>
+            <div className="flex-1">
+              {activeTab === 'dashboard' && <Dashboard />}
+              {activeTab === 'transactions' && <Transactions />}
+              {activeTab === 'analytics' && <Analytics />}
+              {activeTab === 'budgets' && <Budgets />}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
