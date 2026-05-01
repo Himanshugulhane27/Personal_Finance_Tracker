@@ -12,13 +12,16 @@ const express      = require('express');
 const cors         = require('cors');
 const helmet       = require('helmet');
 const morgan       = require('morgan');
+const path         = require('path');
 const errorHandler = require('./middleware/errorHandler');
 const AppError     = require('./utils/AppError');
 
 const app = express();
 
 /* ─── Global middleware ───────────────────────────────── */
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Disabled so React/Tailwind CDNs can load
+}));
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false }));
@@ -29,8 +32,14 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 /* ─── Health check ────────────────────────────────────── */
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+app.get('/health', async (_req, res) => {
+  try {
+    const { pool } = require('./db/pool');
+    await pool.query('SELECT 1');
+    res.json({ status: 'ok', database: 'connected', timestamp: new Date().toISOString() });
+  } catch (error) {
+    res.status(503).json({ status: 'error', database: 'disconnected', timestamp: new Date().toISOString() });
+  }
 });
 
 /* ─── API routes ──────────────────────────────────────── */
@@ -41,7 +50,19 @@ app.use('/budgets',      require('./routes/budget.routes'));
 app.use('/analytics',    require('./routes/analytics.routes'));
 app.use('/export',       require('./routes/export.routes'));
 
-/* ─── 404 catch-all ───────────────────────────────────── */
+/* ─── Frontend ────────────────────────────────────────── */
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+app.get('*', (req, res, next) => {
+  // If it's an API route that wasn't found, pass to the 404 handler
+  if (req.path.startsWith('/auth') || req.path.startsWith('/transactions') || req.path.startsWith('/categories') || req.path.startsWith('/budgets') || req.path.startsWith('/analytics') || req.path.startsWith('/export')) {
+    return next();
+  }
+  // Otherwise serve the React app
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
+
+/* ─── 404 catch-all for API ───────────────────────────── */
 app.use((_req, _res, next) => {
   next(AppError.notFound('Route not found'));
 });
