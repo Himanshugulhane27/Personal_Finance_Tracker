@@ -117,12 +117,26 @@ npm start
 
 Server starts at `http://localhost:3000`
 
-### 6. Run Tests
+### 6. Run the Frontend
+
+The frontend is a lightweight Single-Page Application (SPA) built with React and TailwindCSS via CDN. No build step is required!
+
+1. Open `frontend/index.html` in your browser.
+2. Alternatively, serve it using any static server:
+   ```bash
+   npx serve frontend
+   ```
+
+### 7. Run Tests
 
 ```bash
+# Integration Tests
 createdb finance_tracker_test
 DB_NAME=finance_tracker_test npm run migrate
 DB_NAME=finance_tracker_test npm test
+
+# End-to-End Test (Tests the full user flow)
+DB_NAME=finance_tracker_test npm run test tests/e2e.test.js
 ```
 
 ---
@@ -131,16 +145,22 @@ DB_NAME=finance_tracker_test npm test
 
 ### Health Check
 
+```bash
+curl -X GET http://localhost:3000/health
 ```
-GET /health → { "status": "ok", "timestamp": "…" }
+Response:
+```json
+{ "status": "ok", "database": "connected", "timestamp": "…" }
 ```
 
 ### Authentication (Public)
 
 #### Register
+```bash
+curl -X POST http://localhost:3000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "John", "email": "john@example.com", "password": "MyP@ss123" }'
 ```
-POST /auth/register
-Body: { "name": "John", "email": "john@example.com", "password": "MyP@ss123" }
 
 201: {
   "success": true,
@@ -150,23 +170,24 @@ Body: { "name": "John", "email": "john@example.com", "password": "MyP@ss123" }
     "refresh_token": "a1b2c3…"
   }
 }
-```
 
 #### Login
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{ "email": "john@example.com", "password": "MyP@ss123" }'
 ```
-POST /auth/login
-Body: { "email": "john@example.com", "password": "MyP@ss123" }
 
 200: { "success": true, "data": { "user": {…}, "access_token": "…", "refresh_token": "…" } }
-```
 
 #### Refresh Tokens
+```bash
+curl -X POST http://localhost:3000/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{ "refresh_token": "a1b2c3…" }'
 ```
-POST /auth/refresh
-Body: { "refresh_token": "a1b2c3…" }
 
 200: { "success": true, "data": { "access_token": "…", "refresh_token": "…" } }
-```
 
 > **Note:** Refresh tokens are rotated on each use. The old token is revoked. If a revoked token is reused, ALL tokens for that user are invalidated (security measure).
 
@@ -177,48 +198,55 @@ Body: { "refresh_token": "a1b2c3…" }
 All endpoints below require: `Authorization: Bearer <access_token>`
 
 #### Create Transaction
+```bash
+curl -X POST http://localhost:3000/transactions \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "category_id": "uuid",
+    "amount": 150.50,
+    "type": "expense",
+    "description": "Weekly groceries",
+    "date": "2026-04-30",
+    "is_recurring": false
+  }'
 ```
-POST /transactions
-Body: {
-  "category_id": "uuid",
-  "amount": 150.50,
-  "type": "expense",
-  "description": "Weekly groceries",
-  "date": "2026-04-30",
-  "is_recurring": false
-}
 
 201: { "success": true, "data": { "id": "uuid", … } }
-```
 
 #### List Transactions (Filtered + Paginated)
+```bash
+curl -X GET "http://localhost:3000/transactions?type=expense&category_id=uuid&start_date=2026-04-01&end_date=2026-04-30&page=1&limit=20" \
+  -H "Authorization: Bearer <access_token>"
 ```
-GET /transactions?type=expense&category_id=uuid&start_date=2026-04-01&end_date=2026-04-30&page=1&limit=20
 
 200: {
   "success": true,
   "data": [ … ],
   "pagination": { "page": 1, "limit": 20, "total": 42, "total_pages": 3 }
 }
-```
 
 #### Get / Update / Delete
-```
-GET    /transactions/:id   → 200
-PUT    /transactions/:id   → 200 (partial update)
-DELETE /transactions/:id   → 200
+```bash
+curl -X GET http://localhost:3000/transactions/:id -H "Authorization: Bearer <access_token>"
+curl -X PUT http://localhost:3000/transactions/:id -H "Authorization: Bearer <access_token>" -H "Content-Type: application/json" -d '{ "amount": 200 }'
+curl -X DELETE http://localhost:3000/transactions/:id -H "Authorization: Bearer <access_token>"
 ```
 
 ---
 
 ### Categories (JWT Required)
 
-```
-POST   /categories          → 201  Body: { "name": "Rent", "type": "expense", "color": "#EF4444", "icon": "home" }
-GET    /categories?type=…   → 200
-GET    /categories/:id      → 200
-PUT    /categories/:id      → 200  Body: { "name": "Updated" }
-DELETE /categories/:id      → 200
+```bash
+curl -X POST http://localhost:3000/categories \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Rent", "type": "expense", "color": "#EF4444", "icon": "home" }'
+
+curl -X GET "http://localhost:3000/categories?type=expense" -H "Authorization: Bearer <access_token>"
+curl -X GET http://localhost:3000/categories/:id -H "Authorization: Bearer <access_token>"
+curl -X PUT http://localhost:3000/categories/:id -H "Authorization: Bearer <access_token>" -H "Content-Type: application/json" -d '{ "name": "Updated" }'
+curl -X DELETE http://localhost:3000/categories/:id -H "Authorization: Bearer <access_token>"
 ```
 
 > 12 default categories are auto-created when a user registers (4 income + 8 expense).
@@ -228,28 +256,32 @@ DELETE /categories/:id      → 200
 ### Budgets (JWT Required)
 
 #### Create Budget
-```
-POST /budgets
-Body: { "category_id": "uuid", "amount_limit": 500, "period": "monthly", "start_date": "2026-04-01" }
+```bash
+curl -X POST http://localhost:3000/budgets \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "category_id": "uuid", "amount_limit": 500, "period": "monthly", "start_date": "2026-04-01" }'
 ```
 
 #### List Budgets (with Live Tracking)
+```bash
+curl -X GET http://localhost:3000/budgets -H "Authorization: Bearer <access_token>"
 ```
-GET /budgets → 200
 Response includes per-budget:
   - current_spend     — actual spend in current period
   - spend_percentage  — current_spend / amount_limit × 100
   - remaining         — amount_limit - current_spend
   - warning           — true when spend ≥ 80% of limit
-```
 
 ---
 
 ### Analytics (JWT Required)
 
 #### Monthly Summary
+```bash
+curl -X GET "http://localhost:3000/analytics/summary?month=2026-04" \
+  -H "Authorization: Bearer <access_token>"
 ```
-GET /analytics/summary?month=2026-04
 
 200: {
   "success": true,
@@ -261,11 +293,12 @@ GET /analytics/summary?month=2026-04
     "savings_rate": 36.00
   }
 }
-```
 
 #### Category Breakdown
+```bash
+curl -X GET "http://localhost:3000/analytics/category-breakdown?month=2026-04" \
+  -H "Authorization: Bearer <access_token>"
 ```
-GET /analytics/category-breakdown?month=2026-04
 
 200: {
   "data": [
@@ -278,11 +311,12 @@ GET /analytics/category-breakdown?month=2026-04
     }, …
   ]
 }
-```
 
 #### Trends
+```bash
+curl -X GET "http://localhost:3000/analytics/trends?months=6" \
+  -H "Authorization: Bearer <access_token>"
 ```
-GET /analytics/trends?months=6
 
 200: {
   "data": [
@@ -291,11 +325,12 @@ GET /analytics/trends?months=6
     …
   ]
 }
-```
 
 #### Financial Health Score
+```bash
+curl -X GET http://localhost:3000/analytics/health-score \
+  -H "Authorization: Bearer <access_token>"
 ```
-GET /analytics/health-score
 
 200: {
   "data": {
@@ -308,16 +343,15 @@ GET /analytics/health-score
     }
   }
 }
-```
 
 ---
 
 ### CSV Export (JWT Required)
 
-```
-GET /export/transactions?start_date=2026-01-01&end_date=2026-04-30
-
-→ Downloads: transactions_2026-01-01_to_2026-04-30.csv
+```bash
+curl -X GET "http://localhost:3000/export/transactions?start_date=2026-01-01&end_date=2026-04-30" \
+  -H "Authorization: Bearer <access_token>" \
+  -o transactions.csv
 ```
 
 ---
