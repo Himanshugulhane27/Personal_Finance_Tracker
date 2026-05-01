@@ -7,6 +7,15 @@ const { validate }  = require('../middleware/validate');
 const ctrl          = require('../controllers/auth.controller');
 
 const router = Router();
+const rateLimit = require('express-rate-limit');
+
+const authLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: { success: false, error: { code: 'RATE_LIMIT_EXCEEDED', message: 'Too many requests, please try again later.' } }
+});
+
+router.use(authLimiter);
 
 /* ─── Joi Schemas ─────────────────────────────────────── */
 
