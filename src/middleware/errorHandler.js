@@ -75,7 +75,7 @@ const errorHandler = (err, _req, res, _next) => {
   const statusCode = err.statusCode || 500;
   const message =
     process.env.NODE_ENV === 'production'
-      ? 'Internal server error'
+      ? `Internal server error: ${err.message}` // Temporary change for debugging
       : err.message || 'Internal server error';
 
   return res.status(statusCode).json({

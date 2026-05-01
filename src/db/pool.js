@@ -16,6 +16,8 @@ const poolConfig = {
 
 if (process.env.DATABASE_URL) {
   poolConfig.connectionString = process.env.DATABASE_URL;
+  // Make sure SSL is enabled when connecting via connection string (like Neon)
+  poolConfig.ssl = { rejectUnauthorized: false };
 } else {
   poolConfig.host     = process.env.DB_HOST     || 'localhost';
   poolConfig.port     = Number(process.env.DB_PORT) || 5432;
